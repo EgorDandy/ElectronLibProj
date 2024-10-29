@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/bookdatabase.dart';
 import 'package:flutter_application_1/global_values.dart';
-import 'package:flutter_application_1/user.dart';
 import 'registry_page.dart';
 import 'package:flutter_application_1/interface/search_page.dart';
 
@@ -24,26 +24,45 @@ class _AutorizePageState extends State<AutorizePage>{
           ...autorizeAdapter.getWidgets(16.0),
           Text(errorMes, style: const TextStyle(color: Colors.red)),
           ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             errorMes = '';
             String login = autorizeAdapter.getValue('Логин');
             String password = autorizeAdapter.getValue('Пороль');
-            for (User user in users) {
-              String result = user.tryEntry(login, password);
-              if (result == 'yees') {
-                errorMes = '';
+            String result = '';
+            bool isExist = false;
+            for (final user in allUsers) {
+              if (user['username'] != login) {
+                isExist = false;
+                setState(() {
+                  errorMes = 'Неверный логин';
+                });
+              } else if (user['password'] != password) {
+                isExist = false;
+                setState(() {
+                  errorMes = 'Неверный пороль';
+                });
+              }
+              else {
+                isExist = true;
+                setState(() {
+                  errorMes = '';
+                });
+                curUser = user;
+                bookTableName = curUser['book_table_address'];
+                books = await BookDatabase.instance.getAllBooks();
+                break;
+              }
+            }
+            if (isExist) {
                 autorizeAdapter.dispose();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const SearchPage()),
                 );
-                break;
-               } else {
-                  setState(() {
-                    errorMes = result;
-                  });
-               }
-               
+            } else {
+              setState(() {
+                errorMes = result;
+              });
             }
           },
           child: const Text('Войти'),
@@ -51,6 +70,7 @@ class _AutorizePageState extends State<AutorizePage>{
           const SizedBox(height: 10),
           ElevatedButton(
           onPressed: () {
+            autorizeAdapter.dispose();
             errorMes = '';
             Navigator.push(
               context,

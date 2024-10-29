@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/userdatabase.dart';
 import 'package:flutter_application_1/global_values.dart';
 import 'package:flutter_application_1/interface/signing/autorize_page.dart';
-import 'package:flutter_application_1/user.dart';
 
 class RegystryPage extends StatefulWidget{
   const RegystryPage({super.key});
@@ -23,7 +23,7 @@ class _RegystryPageState extends State<RegystryPage>{
           ...regAdapter.getWidgets(16.0),
           Text(errorMes, style: const TextStyle(color: Colors.red)),
           ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             errorMes = '';
             String login = regAdapter.getValue('Придумайте логин');
             String password = regAdapter.getValue('Придумайте пороль');
@@ -32,30 +32,34 @@ class _RegystryPageState extends State<RegystryPage>{
               setState(() {
                 errorMes = 'Все поля должны быть заполнены';
               });
+            } else if (password != secPassword) {
+              setState(() {
+                errorMes = 'Пароли не совпадают';
+              });
             } else {
-            for (User user in users) {
-              String result = user.tryEntry(login, password);
-              if (result == 'yees' || result == 'Incorrect password') {
+              bool userExists = false;
+              for (final user in allUsers) {
+                if (user['username'] == login) {
+                  userExists = true;
+                  break;
+                }
+              }
+              if (userExists) {
                 setState(() {
-                    errorMes = 'Такой пользователь уже существует';
-                  });
-                break;
-               } else {
-                  if (password != secPassword) {
-                    setState(() {
-                    errorMes = 'Пороли не совподают';
-                  });
-                  }
-                  else {
-                    users.add(User(login, password));
-                    regAdapter.dispose();
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AutorizePage()),
-                  );
-                  }
-               }
-            }
+                  errorMes = 'Пользователь с таким логином уже существует';
+                });
+              } else {
+                // Добавление пользователя в базу данных
+                final bookTableAddress = '${login}_books';
+                await UserDatabase.instance.addUser(login, password, bookTableAddress);
+                // Обновление глобального списка пользователей
+                allUsers = await UserDatabase.instance.getAllUsers();
+                regAdapter.dispose();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AutorizePage()),
+                );
+              }
             }
           },
           child: const Text('Зарегистрироваться'),
@@ -63,6 +67,7 @@ class _RegystryPageState extends State<RegystryPage>{
         const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
+            regAdapter.dispose();
             errorMes = '';
             Navigator.push(
               context,

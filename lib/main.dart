@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/userdatabase.dart';
 import 'interface/signing/autorize_page.dart';
+import 'global_values.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserDatabase.instance.deleteAllUsers();
+  await initializeUsers();
   runApp(const MyApp());
 }
 

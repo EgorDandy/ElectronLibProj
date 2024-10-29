@@ -88,34 +88,34 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 70),
+              SizedBox(height: 70),
               Align(
                 alignment: Alignment.center,
                 child: Column(
-                  children: const [
-                    CircleAvatar(
+                  children: [
+                    const CircleAvatar(
                       radius: 110,
                       backgroundImage: NetworkImage('user_icon.jpg'),
                     ),
-                    SizedBox(height: 50),
-                    Text(
+                    const SizedBox(height: 50),
+                    const Text(
                       'Логин пользователя',
                       style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50),
               Text(
                 '  Количество книг:',
-                style: const TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: 24),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 '  Количество избранных:',
-                style: const TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: 24),
               ),
-              const SizedBox(height: 70),
+              SizedBox(height: 70),
             ],
           )
         ),

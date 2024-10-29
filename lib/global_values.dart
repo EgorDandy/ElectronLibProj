@@ -1,39 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/userdatabase.dart';
 import 'authority.dart';
 import 'objects/book.dart';
-import 'user.dart';
+
+
 final homeOptions = [
-      AuthOption('Регистрация'),
-      AuthOption('Авторизация'),
-    ];
+  AuthOption('Регистрация'),
+  AuthOption('Авторизация'),
+];
 final homeAdapter = AuthOptionAdapter(homeOptions);
 
 final regOptions = [
-      AuthOption('Придумайте логин'),
-      AuthOption('Придумайте пороль'),
-      AuthOption('Повторите пороль')
-    ];
+  AuthOption('Придумайте логин'),
+  AuthOption('Придумайте пороль'),
+  AuthOption('Повторите пороль')
+];
 
 final regAdapter = AuthOptionAdapter(regOptions);
 
 final autrizeOptions = [
-      AuthOption('Логин'),
-      AuthOption('Пороль'),
-    ];
+  AuthOption('Логин'),
+  AuthOption('Пороль'),
+];
 final autorizeAdapter = AuthOptionAdapter(autrizeOptions);
 
-User firstUser = User('first', '12345678');
 
-List<User> users = [firstUser];
+final userdb = UserDatabase.instance.database;
+List<Map<String, dynamic>> allUsers = [];
+Future<void> initializeUsers() async {
+  allUsers = await UserDatabase.instance.getAllUsers();
+}
+Map<String, dynamic> curUser = {};
+
 
 String errorMes = '';
 
-List<Book> books = [
-  Book(title: 'Book 1', author: 'Author 1',  isFavorite: false), 
-  Book(title: 'Book 2', author: 'Author 2',  isFavorite: false),
-  Book(title: 'Book 3', author: 'Author 3',  isFavorite: false),
-  Book(title: 'Book 4', author: 'Author 4',  isFavorite: false)
-];
+
+String bookTableName = '';
+List<Book> books = [];
 List<Book> favorBooks = [];
 List<Book> searchList = [];
 

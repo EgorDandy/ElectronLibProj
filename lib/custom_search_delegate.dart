@@ -38,6 +38,7 @@ class CustomSearchDelegate extends SearchDelegate {
       searchList = results;
       books = List.from(searchList);
     });
+    // ignore: use_build_context_synchronously
     close(context, null);
   });
   
