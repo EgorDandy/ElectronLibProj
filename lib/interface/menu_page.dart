@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/menu_item.dart';
+import 'package:flutter_application_1/global_values.dart';
+import 'package:flutter_application_1/objects/menu_item.dart';
 
 class MenuPage {
 
   Widget createMenu(List<ItemMenu> menuItems) {
+    String login = curUser['username'];
     return Drawer(
       child: ListView(
           padding: EdgeInsets.zero,
@@ -19,7 +21,7 @@ class MenuPage {
                   children: <Widget>[
                     CircleAvatar(
                       radius: 45,
-                      backgroundImage: const AssetImage('assets/user_icon.jpg'),
+                      backgroundImage: AssetImage('assets/user_icon.jpg'),
                       child: ClipOval(
                       child: Image.asset(
                         'assets/user_icon.jpg',
@@ -30,8 +32,8 @@ class MenuPage {
                       ), // Здесь можно указать путь к фото пользователя
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      'Имя пользователя', // Здесь будет отображаться имя пользователя
+                    Text(
+                      login, // Здесь будет отображаться имя пользователя
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,

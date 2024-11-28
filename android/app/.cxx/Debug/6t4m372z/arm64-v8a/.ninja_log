@@ -1,0 +1,7 @@
+# ninja log v5
+1	1253	7543917365515952	CMakeFiles/native.dir/D_/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/lib/ffi/native.cpp.o	415c85315343b559
+1256	1435	7543917367046153	D:/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/build/app/intermediates/cxx/Debug/6t4m372z/obj/arm64-v8a/libnative.so	37d4a992118cdb1e
+2	582	7544072981062224	CMakeFiles/native.dir/D_/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/lib/ffi/native.cpp.o	415c85315343b559
+582	761	7544072982432255	D:/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/build/app/intermediates/cxx/Debug/6t4m372z/obj/arm64-v8a/libnative.so	37d4a992118cdb1e
+2	581	7544074365132447	CMakeFiles/native.dir/D_/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/lib/ffi/native.cpp.o	415c85315343b559
+582	701	7544074366022405	D:/3KURS/5SEMESTR/PMS/Lab1/flutter_application_1/build/app/intermediates/cxx/Debug/6t4m372z/obj/arm64-v8a/libnative.so	37d4a992118cdb1e

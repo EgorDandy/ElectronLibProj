@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/interface/profile_page.dart';
 import 'package:flutter_application_1/interface/settings_page.dart';
 import 'package:flutter_application_1/interface/signing/autorize_page.dart';
-import 'package:flutter_application_1/menu_item.dart';
+import 'package:flutter_application_1/objects/menu_item.dart';
 import 'package:flutter_application_1/global_values.dart';
 import 'favorites_page.dart';
 import 'package:flutter_application_1/custom_search_delegate.dart';
@@ -38,7 +38,7 @@ class _SearchPageState extends State<SearchPage>{
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: CustomSearchDelegate(setState),
+                delegate: CustomSearchDelegate(setState, books),
               );
               bodyMess = 'Результаты поиска';
             },
@@ -50,6 +50,7 @@ class _SearchPageState extends State<SearchPage>{
           icon: Icons.account_circle, 
           value: 'Профиль', 
           func: (){
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ProfilePage()),
@@ -60,28 +61,29 @@ class _SearchPageState extends State<SearchPage>{
           icon: Icons.book, 
           value: 'Библиотека', 
           func: () {
+            searchList = List.from(books);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
-            searchList = List.from(books);
           }
         ),
         ItemMenu(
           icon: Icons.star,
           value: 'Избранное',
           func: () {
+            searchList = List.from(favorBooks);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const FavoritesPage()),
             );
-            searchList = List.from(favorBooks);
           }
         ),
         ItemMenu(
           icon: Icons.settings, 
           value: 'Настройки', 
           func: () {
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -92,11 +94,12 @@ class _SearchPageState extends State<SearchPage>{
           icon: Icons.logout, 
           value: 'Выйти', 
           func: () {
-            Navigator.push(
+            searchList.clear();
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const AutorizePage()),
+              (Route<dynamic> route) => false,
             );
-            searchList.clear();
           }
         )
       ]),

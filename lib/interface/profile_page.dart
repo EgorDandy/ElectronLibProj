@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/database/userdatabase.dart';
 import 'package:flutter_application_1/global_values.dart';
 import 'package:flutter_application_1/interface/favorites_page.dart';
 import 'package:flutter_application_1/interface/home_page.dart';
 import 'package:flutter_application_1/interface/search_page.dart';
 import 'package:flutter_application_1/interface/settings_page.dart';
 import 'package:flutter_application_1/interface/signing/autorize_page.dart';
-import 'package:flutter_application_1/menu_item.dart';
+import 'package:flutter_application_1/objects/menu_item.dart';
 import 'menu_page.dart';
+import 'package:image_picker/image_picker.dart'; 
+import 'dart:io';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +19,39 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  String login = curUser['username'];
+  int bookAmo = books.length;
+  int favorAmo = favorBooks.length;
+  File? _image; 
+  final picker = ImagePicker();
+
+  @override 
+  void initState() {
+    super.initState();
+    _loadPhoto(); 
+  }
+
+  Future<void> _loadPhoto() async { 
+    if (curUser['photo'] != null) { 
+      setState(() { 
+        _image = File(curUser['photo']); 
+      }); 
+    } 
+  }
+
+  Future getImage() async { 
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery); 
+    final UserDatabase db = UserDatabase.instance;
+    if (pickedFile != null) { 
+      setState(() { 
+        _image = File(pickedFile.path); 
+      });
+      await db.updatePhoto(pickedFile.path);
+    } else { 
+      print('No image selected.'); 
+    } 
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,39 +70,40 @@ class _ProfilePageState extends State<ProfilePage> {
           icon: Icons.search,
           value: 'Главная',
           func: () {
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SearchPage()),
             );
-            searchList.clear();
           },
         ),
         ItemMenu(
           icon: Icons.book,
           value: 'Библиотека',
           func: () {
+            searchList = List.from(books);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
-            searchList = List.from(books);
           },
         ),
         ItemMenu(
           icon: Icons.star,
           value: 'Избранное',
           func: () {
+            searchList = List.from(favorBooks);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const FavoritesPage()),
             );
-            searchList = List.from(favorBooks);
           },
         ),
         ItemMenu(
           icon: Icons.settings,
           value: "Настройки",
           func:() {
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -77,14 +114,16 @@ class _ProfilePageState extends State<ProfilePage> {
           icon: Icons.logout,
           value: 'Выйти',
           func: () {
-            Navigator.push(
+            searchList.clear();
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const AutorizePage()),
+              (Route<dynamic> route) => false,
             );
           },
         ),
       ]),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -93,26 +132,43 @@ class _ProfilePageState extends State<ProfilePage> {
                 alignment: Alignment.center,
                 child: Column(
                   children: [
-                    const CircleAvatar(
-                      radius: 110,
-                      backgroundImage: NetworkImage('user_icon.jpg'),
-                    ),
-                    const SizedBox(height: 50),
-                    const Text(
-                      'Логин пользователя',
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    Stack( 
+                      children: [ 
+                        CircleAvatar( 
+                          radius: 110, 
+                          backgroundImage: _image != null 
+                              ? FileImage(_image!) 
+                              : AssetImage('assets/user_icon.jpg') as ImageProvider, 
+                        ), 
+                        Positioned( 
+                          bottom: 0, 
+                          right: 0, 
+                          child: IconButton( 
+                            icon: Icon(Icons.edit), 
+                            onPressed: getImage, 
+                            tooltip: 'Изменить фото', 
+                            iconSize: 30, 
+                            color: Colors.orange, 
+                          ), 
+                        ), 
+                      ], 
+                    ), 
+                    SizedBox(height: 50), 
+                    Text( 
+                      login, 
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold), 
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 50),
               Text(
-                '  Количество книг:',
+                '  Количество книг: $bookAmo',
                 style: TextStyle(fontSize: 24),
               ),
               SizedBox(height: 20),
               Text(
-                '  Количество избранных:',
+                '  Количество избранных: $favorAmo',
                 style: TextStyle(fontSize: 24),
               ),
               SizedBox(height: 70),

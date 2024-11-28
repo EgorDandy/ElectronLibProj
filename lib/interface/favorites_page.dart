@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/custom_search_delegate.dart';
 import 'package:flutter_application_1/interface/profile_page.dart';
 import 'package:flutter_application_1/interface/settings_page.dart';
 import 'package:flutter_application_1/interface/signing/autorize_page.dart';
-import 'package:flutter_application_1/menu_item.dart';
+import 'package:flutter_application_1/objects/menu_item.dart';
 import 'package:flutter_application_1/global_values.dart';
 import 'home_page.dart';
 import 'menu_page.dart';
@@ -29,6 +30,17 @@ class _FavoritesPageState extends State<FavoritesPage>{
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(setState, favorBooks),
+              );
+            },
+          ),
+        ],
       ),
       drawer: MenuPage().createMenu([
         ItemMenu(
@@ -46,6 +58,7 @@ class _FavoritesPageState extends State<FavoritesPage>{
           icon: Icons.account_circle, 
           value: 'Профиль', 
           func: () {
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const ProfilePage()),
@@ -56,17 +69,18 @@ class _FavoritesPageState extends State<FavoritesPage>{
           icon: Icons.book, 
           value: 'Библиотека', 
           func: () {
+            searchList = List.from(books);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
             );
-            searchList = List.from(books);
           }
         ),
         ItemMenu(
           icon: Icons.settings, 
           value: 'Настройки', 
           func: () {
+            searchList.clear();
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SettingsPage()),
@@ -77,18 +91,18 @@ class _FavoritesPageState extends State<FavoritesPage>{
           icon: Icons.logout, 
           value: 'Выйти', 
           func: () {
-            Navigator.push(
+            searchList.clear();
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const AutorizePage()),
+              (Route<dynamic> route) => false,
             );
           }
         ),
       ]),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: favorBooks.map((book) => book.createBookWidget(setState)).toList(),
-          )
+      body: SingleChildScrollView(
+        child: Column(
+          children: searchList.map((book) => book.createBookWidget(setState, context)).toList(),
         )
       ),
     );

@@ -40,7 +40,7 @@ CREATE TABLE books (
 ''');
   }
 
-  Future<void> addBook(String title, String author, String pdfPath) async {
+  Future<void> addBook(String title, String author, String? pdfPath) async {
     final db = await instance.database;
 
     await db.insert(bookTableName, {
@@ -71,9 +71,10 @@ CREATE TABLE $bookTableName (
 
     return List.generate(maps.length, (i) {
       return Book(
-        title: maps[i]['book_title'],
+        title: maps[i]['title'],
         author: maps[i]['author'],
-        isFavorite: maps[i]['is_favorite'] == 1,
+        path: maps[i]['pdfPath'],
+        isFavorite: maps[i]['isFavor'] == 1,
       );
     });
   }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/objects/book.dart';
 import 'global_values.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   void Function(VoidCallback fn) setState;
-  CustomSearchDelegate(this.setState);
+  List<Book> baseList;
+  CustomSearchDelegate(this.setState, this.baseList);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -30,19 +32,24 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    final results = books.where((book) => book.title.contains(query)).toList();
-  
-  // Закрываем страницу поиска
-  Future.delayed(Duration.zero, () {
-    setState(() {
-      searchList = results;
-      books = List.from(searchList);
+    List<Book> results;
+    print('ЗАПРОС РАВЕН = $query.');
+    if (query != '') {
+      results = baseList.where((book) => book.title.contains(query)).toList();
+    }
+    else {
+      results = List.from(baseList);
+    }
+    print('РЕЗУЛЬТАТ РАВЕН = $baseList');
+    // Закрываем страницу поиска
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        searchList = List.from(results);
+      });
+      // ignore: use_build_context_synchronously
+      close(context, null);
     });
-    // ignore: use_build_context_synchronously
-    close(context, null);
-  });
-  
-  return Container();
+    return Container();
   }
 
   @override

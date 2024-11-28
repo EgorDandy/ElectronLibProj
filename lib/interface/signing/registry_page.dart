@@ -1,7 +1,9 @@
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/userdatabase.dart';
 import 'package:flutter_application_1/global_values.dart';
 import 'package:flutter_application_1/interface/signing/autorize_page.dart';
+import 'package:flutter_application_1/ffi/native.dart';
 
 class RegystryPage extends StatefulWidget{
   const RegystryPage({super.key});
@@ -15,7 +17,10 @@ class _RegystryPageState extends State<RegystryPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Регистрация')),
+      appBar: AppBar(
+        title: const Text('Регистрация'),
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(right: 32.0, left: 32.0, top: 192.0),
         child: Column(
@@ -32,14 +37,25 @@ class _RegystryPageState extends State<RegystryPage>{
               setState(() {
                 errorMes = 'Все поля должны быть заполнены';
               });
-            } else if (password != secPassword) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const RegystryPage()),
+                (Route<dynamic> route) => false,
+              );
+            } else if (compareStrings(password.toNativeUtf8(), secPassword.toNativeUtf8()) == false) {
               setState(() {
                 errorMes = 'Пароли не совпадают';
               });
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const RegystryPage()),
+                (Route<dynamic> route) => false,
+              );
             } else {
               bool userExists = false;
               for (final user in allUsers) {
-                if (user['username'] == login) {
+                String username = user['username'];
+                if (compareStrings(username.toNativeUtf8(), login.toNativeUtf8()) == true) {
                   userExists = true;
                   break;
                 }
@@ -48,6 +64,11 @@ class _RegystryPageState extends State<RegystryPage>{
                 setState(() {
                   errorMes = 'Пользователь с таким логином уже существует';
                 });
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegystryPage()),
+                  (Route<dynamic> route) => false,
+                );
               } else {
                 // Добавление пользователя в базу данных
                 final bookTableAddress = '${login}_books';
@@ -55,9 +76,10 @@ class _RegystryPageState extends State<RegystryPage>{
                 // Обновление глобального списка пользователей
                 allUsers = await UserDatabase.instance.getAllUsers();
                 regAdapter.dispose();
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const AutorizePage()),
+                  (Route<dynamic> route) => false,
                 );
               }
             }
@@ -69,9 +91,10 @@ class _RegystryPageState extends State<RegystryPage>{
           onPressed: () {
             regAdapter.dispose();
             errorMes = '';
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const AutorizePage()),
+              (Route<dynamic> route) => false,
             );
           },
           child: const Text('Вход'),

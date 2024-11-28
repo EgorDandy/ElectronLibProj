@@ -36,7 +36,8 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   book_table_address TEXT NOT NULL,
   total_books INTEGER NOT NULL,
-  favorite_books INTEGER NOT NULL
+  favorite_books INTEGER NOT NULL,
+  photo TEXT
 )
 ''');
   }
@@ -86,10 +87,17 @@ CREATE TABLE users (
     where: 'password = ?',
     whereArgs: [password],
   );
-
-  print("Result: $result1"); // Для отладки
-  print("password: $password");
   return result1 == result2;
+}
+
+Future<void> updatePhoto(String photoPath) async { 
+  final Database db = await database; 
+  await db.update( 
+    'users', 
+    {'photo': photoPath}, 
+    where: 'username = ?', 
+    whereArgs: curUser['username'], // замените на реальный идентификатор пользователя 
+  ); 
 }
 
   Future<void> deleteUser(int id) async {
@@ -107,8 +115,6 @@ CREATE TABLE users (
   await db.delete(
     'users',
   );
-
-  print('Все пользователи удалены');
 }
 
   Future<void> incrementTotalBooks(int id) async {
